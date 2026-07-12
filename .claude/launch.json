@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "idea-software-spot",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/righthwm/idea-software-spot",
+      "port": 5173
+    },
+    {
+      "name": "idea-software-spot-5184",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5184", "--strictPort"],
+      "cwd": "/Users/righthwm/idea-software-spot",
+      "port": 5184
+    }
+  ]
+}

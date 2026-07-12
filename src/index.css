@@ -1,0 +1,172 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-void: #0a0a0f;
+  --color-ink: #10101a;
+  --color-electric: #4d6bff;
+  --color-electric-deep: #2331f0;
+  --color-signal: #ff5a2d;
+  --color-paper: #ededf2;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Instrument Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --ease-premium: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+html {
+  background: var(--color-void);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-paper);
+  background: var(--color-void);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-electric);
+  color: var(--color-paper);
+}
+
+/* Custom cursor active: hide the native one on precise pointers */
+@media (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-electric);
+  outline-offset: 3px;
+}
+
+/* ---- "slide up duplicate" text flip (hover reveal on links / service titles) ---- */
+.flip {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+.flip > span {
+  display: block;
+  transition: transform 0.6s var(--ease-premium);
+  will-change: transform;
+}
+.flip > span:nth-child(2) {
+  position: absolute;
+  inset: 0;
+  transform: translateY(105%);
+}
+.flip-trigger:hover .flip > span:first-child {
+  transform: translateY(-105%);
+}
+.flip-trigger:hover .flip > span:nth-child(2) {
+  transform: translateY(0);
+}
+
+/* ---- service rows: dim siblings, expanding underline, scale on hover ---- */
+.service-list:hover .service-row {
+  opacity: 0.3;
+}
+.service-list:hover .service-row:hover {
+  opacity: 1;
+}
+.service-row {
+  transition: opacity 0.5s var(--ease-premium);
+}
+.service-row .row-line {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.8s var(--ease-premium);
+}
+.service-row:hover .row-line {
+  transform: scaleX(1);
+}
+.service-row .row-head {
+  transform-origin: left center;
+  transition: transform 0.6s var(--ease-premium);
+}
+.service-row:hover .row-head {
+  transform: scale(1.05);
+}
+
+/* ---- hero scroll indicator pulse ---- */
+@keyframes scroll-pulse {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: 1;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: top;
+    opacity: 1;
+  }
+  56% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    opacity: 0.4;
+  }
+}
+.scroll-pulse {
+  animation: scroll-pulse 1.8s var(--ease-premium) infinite;
+}
+
+/* ---- portfolio card zoom ---- */
+.project-card .card-media {
+  transition: transform 0.9s var(--ease-premium);
+  will-change: transform;
+}
+.project-card:hover .card-media {
+  transform: scale(1.1);
+}
+.project-card .card-overlay {
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-premium);
+}
+.project-card:hover .card-overlay {
+  opacity: 1;
+}
+
+/* ---- contact form: inactive fields recede ---- */
+.contact-field {
+  opacity: 0.4;
+  transition: opacity 0.45s var(--ease-premium);
+}
+.contact-field:focus-within,
+.contact-field:hover {
+  opacity: 1;
+}
+
+/* ---- cinematic grain overlay ---- */
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-pulse {
+    animation: none;
+  }
+  .flip > span,
+  .service-row,
+  .service-row .row-line,
+  .service-row .row-head,
+  .project-card .card-media,
+  .project-card .card-overlay,
+  .contact-field {
+    transition: none !important;
+  }
+}
