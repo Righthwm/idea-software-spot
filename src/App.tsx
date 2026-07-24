@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ScrollTrigger } from './lib/gsap'
 import { SmoothScroll, startScroll, stopScroll } from './lib/scroll'
-import { usePrefersReducedMotion } from './hooks/useMedia'
+import { usePrefersReducedMotion, useLowPower } from './hooks/useMedia'
 import Preloader from './components/Preloader'
 import Cursor from './components/Cursor'
 import BackgroundFX from './components/BackgroundFX'
@@ -19,6 +19,7 @@ import Footer from './components/Footer'
 export default function App() {
   const [loaded, setLoaded] = useState(false)
   const reduced = usePrefersReducedMotion()
+  const lowPower = useLowPower()
 
   // Lock scrolling while the preloader runs, re-measure triggers after
   useEffect(() => {
@@ -34,8 +35,10 @@ export default function App() {
     <SmoothScroll enabled={!reduced}>
       {!loaded && <Preloader reduced={reduced} onDone={() => setLoaded(true)} />}
       <Cursor />
-      <BackgroundFX reduced={reduced} />
-      {!reduced && <ParticleField ready={loaded} />}
+      {/* On phones the fbm shader background is dropped for a cheap static
+          gradient; the particle field stays but runs in a lighter mode. */}
+      <BackgroundFX reduced={reduced || lowPower} />
+      {!reduced && <ParticleField ready={loaded} lowPower={lowPower} />}
       <div className="grain relative z-10">
         <Header />
         <OrbitalMenu />

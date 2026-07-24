@@ -22,3 +22,20 @@ export function usePrefersReducedMotion() {
 export function useIsTouch() {
   return useMediaQuery('(pointer: coarse)')
 }
+
+// Static, one-shot read of the device's raw horsepower.
+const LOW_CORE = typeof navigator !== 'undefined' && (navigator.hardwareConcurrency ?? 8) <= 4
+const LOW_MEM =
+  typeof navigator !== 'undefined' &&
+  ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4
+
+/**
+ * True on phones / low-power devices, where two full-screen WebGL layers plus
+ * 24k particles overwhelm the GPU. Reactive to viewport + pointer changes so
+ * rotating a tablet or docking a laptop re-evaluates. Drives lighter rendering.
+ */
+export function useLowPower() {
+  const coarse = useMediaQuery('(pointer: coarse)')
+  const narrow = useMediaQuery('(max-width: 820px)')
+  return (coarse && narrow) || LOW_CORE || LOW_MEM
+}

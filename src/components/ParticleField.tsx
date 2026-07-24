@@ -11,7 +11,8 @@ import { NAV_LINKS } from '../data/content'
  * next one the stream gathers into the new shape. Scrolling up reverses it.
  */
 
-const COUNT = 24000
+const COUNT_HIGH = 24000
+const COUNT_LOW = 7000 // phones: ~70% fewer points to cut fill-rate/overdraw
 const SHAPES = 5 // must match NAV_LINKS length
 
 const VERT = /* glsl */ `
@@ -113,11 +114,11 @@ void main() {
 `
 
 /** Acasă — fibonacci sphere with slight radial jitter. */
-function makeSphere(rand: () => number) {
-  const arr = new Float32Array(COUNT * 3)
+function makeSphere(rand: () => number, count: number) {
+  const arr = new Float32Array(count * 3)
   const golden = Math.PI * (3 - Math.sqrt(5))
-  for (let i = 0; i < COUNT; i++) {
-    const y = 1 - (i / (COUNT - 1)) * 2
+  for (let i = 0; i < count; i++) {
+    const y = 1 - (i / (count - 1)) * 2
     const r = Math.sqrt(1 - y * y)
     const th = golden * i
     const rad = 1.65 * (0.96 + rand() * 0.08)
@@ -129,9 +130,9 @@ function makeSphere(rand: () => number) {
 }
 
 /** Servicii — trefoil torus knot (p=2, q=3) with a fuzzy tube. */
-function makeKnot(rand: () => number) {
-  const arr = new Float32Array(COUNT * 3)
-  for (let i = 0; i < COUNT; i++) {
+function makeKnot(rand: () => number, count: number) {
+  const arr = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
     const t = rand() * Math.PI * 2
     const cx = (2 + Math.cos(3 * t)) * Math.cos(2 * t)
     const cy = (2 + Math.cos(3 * t)) * Math.sin(2 * t)
@@ -147,9 +148,9 @@ function makeKnot(rand: () => number) {
 }
 
 /** Proiecte — double helix, echoing the descending card spiral. */
-function makeHelix(rand: () => number) {
-  const arr = new Float32Array(COUNT * 3)
-  for (let i = 0; i < COUNT; i++) {
+function makeHelix(rand: () => number, count: number) {
+  const arr = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
     const strand = i % 2
     const y = (rand() - 0.5) * 4.2
     const th = y * 2.4 + strand * Math.PI
@@ -163,9 +164,9 @@ function makeHelix(rand: () => number) {
 }
 
 /** Despre — three-armed spiral galaxy facing the camera. */
-function makeGalaxy(rand: () => number) {
-  const arr = new Float32Array(COUNT * 3)
-  for (let i = 0; i < COUNT; i++) {
+function makeGalaxy(rand: () => number, count: number) {
+  const arr = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
     const arm = i % 3
     const r = Math.pow(rand(), 0.65) * 2.3
     const th = arm * ((Math.PI * 2) / 3) + r * 1.7 + (rand() - 0.5) * 0.45
@@ -178,9 +179,9 @@ function makeGalaxy(rand: () => number) {
 }
 
 /** Contact — six-armed asterisk, the star from the idea*spot logo. */
-function makeAsterisk(rand: () => number) {
-  const arr = new Float32Array(COUNT * 3)
-  for (let i = 0; i < COUNT; i++) {
+function makeAsterisk(rand: () => number, count: number) {
+  const arr = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
     const ray = i % 6
     const th = ray * (Math.PI / 3) + Math.PI / 6
     const len = Math.sqrt(rand()) * 2.0
@@ -193,7 +194,7 @@ function makeAsterisk(rand: () => number) {
   return arr
 }
 
-function Particles() {
+function Particles({ count, sizeScale }: { count: number; sizeScale: number }) {
   const mat = useRef<THREE.ShaderMaterial>(null!)
   const group = useRef<THREE.Group>(null!)
   const pointer = useRef({ x: 0, y: 0 })
@@ -211,16 +212,16 @@ function Particles() {
   const geo = useMemo(() => {
     const rand = Math.random
     const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(makeSphere(rand), 3))
-    g.setAttribute('aPosB', new THREE.BufferAttribute(makeKnot(rand), 3))
-    g.setAttribute('aPosC', new THREE.BufferAttribute(makeHelix(rand), 3))
-    g.setAttribute('aPosD', new THREE.BufferAttribute(makeGalaxy(rand), 3))
-    g.setAttribute('aPosE', new THREE.BufferAttribute(makeAsterisk(rand), 3))
-    const rnd = new Float32Array(COUNT * 3)
+    g.setAttribute('position', new THREE.BufferAttribute(makeSphere(rand, count), 3))
+    g.setAttribute('aPosB', new THREE.BufferAttribute(makeKnot(rand, count), 3))
+    g.setAttribute('aPosC', new THREE.BufferAttribute(makeHelix(rand, count), 3))
+    g.setAttribute('aPosD', new THREE.BufferAttribute(makeGalaxy(rand, count), 3))
+    g.setAttribute('aPosE', new THREE.BufferAttribute(makeAsterisk(rand, count), 3))
+    const rnd = new Float32Array(count * 3)
     for (let i = 0; i < rnd.length; i++) rnd[i] = rand()
     g.setAttribute('aRand', new THREE.BufferAttribute(rnd, 3))
     return g
-  }, [])
+  }, [count])
 
   useFrame((state) => {
     const u = mat.current.uniforms
@@ -278,7 +279,7 @@ function Particles() {
             uTime: { value: 0 },
             uProg: { value: 0 },
             uMouse: { value: new THREE.Vector3(99, 99, 0) },
-            uSize: { value: Math.min(2, window.devicePixelRatio) * 3.4 },
+            uSize: { value: Math.min(2, window.devicePixelRatio) * sizeScale },
           }}
         />
       </points>
@@ -286,7 +287,19 @@ function Particles() {
   )
 }
 
-export default function ParticleField({ ready }: { ready: boolean }) {
+export default function ParticleField({
+  ready,
+  lowPower,
+}: {
+  ready: boolean
+  lowPower: boolean
+}) {
+  // Phones: fewer points, larger sprites to keep the shapes legible, and a
+  // hard DPR cap of 1 so the backing store isn't rendered at 2–3× resolution.
+  const count = lowPower ? COUNT_LOW : COUNT_HIGH
+  const sizeScale = lowPower ? 4.6 : 3.4
+  const dpr: [number, number] = lowPower ? [1, 1] : [1, 1.75]
+
   return (
     <div
       aria-hidden="true"
@@ -295,10 +308,10 @@ export default function ParticleField({ ready }: { ready: boolean }) {
     >
       <Canvas
         camera={{ position: [0, 0, 6], fov: 40 }}
-        dpr={[1, 1.75]}
+        dpr={dpr}
         gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
       >
-        <Particles />
+        <Particles count={count} sizeScale={sizeScale} />
       </Canvas>
     </div>
   )
