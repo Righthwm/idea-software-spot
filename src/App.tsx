@@ -32,7 +32,7 @@ export default function App() {
   }, [loaded])
 
   return (
-    <SmoothScroll enabled={!reduced}>
+    <SmoothScroll enabled={!reduced && !lowPower}>
       {!loaded && <Preloader reduced={reduced} onDone={() => setLoaded(true)} />}
       <Cursor />
       {/* On phones the fbm shader background is dropped for a cheap static

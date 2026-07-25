@@ -12,7 +12,7 @@ import { NAV_LINKS } from '../data/content'
  */
 
 const COUNT_HIGH = 24000
-const COUNT_LOW = 3800 // phones: ~85% fewer points to cut fill-rate/overdraw
+const COUNT_LOW = 5500 // phones: fewer points + small sprites keep fill low
 const SHAPES = 5 // must match NAV_LINKS length
 
 const VERT = /* glsl */ `
@@ -194,7 +194,15 @@ function makeAsterisk(rand: () => number, count: number) {
   return arr
 }
 
-function Particles({ count, sizeScale }: { count: number; sizeScale: number }) {
+function Particles({
+  count,
+  sizeScale,
+  mobile,
+}: {
+  count: number
+  sizeScale: number
+  mobile: boolean
+}) {
   const mat = useRef<THREE.ShaderMaterial>(null!)
   const group = useRef<THREE.Group>(null!)
   const pointer = useRef({ x: 0, y: 0 })
@@ -262,7 +270,15 @@ function Particles({ count, sizeScale }: { count: number; sizeScale: number }) {
       Math.sin(v * Math.PI) * 1.4 + Math.sin(state.clock.elapsedTime * 0.12) * 0.18
     g.rotation.x = THREE.MathUtils.lerp(g.rotation.x, pointer.current.y * -0.22 - 0.08, 0.04)
     g.rotation.z = THREE.MathUtils.lerp(g.rotation.z, pointer.current.x * 0.1, 0.04)
-    g.scale.setScalar(Math.min(1, vp.width / 7.5))
+    // On phones the shape would otherwise shrink to a dense ball centered on
+    // the copy — scale it up so it fills the width as a diffuse backdrop and
+    // lift it above the headline so text stays readable over the glow.
+    if (mobile) {
+      g.scale.setScalar(Math.min(1.05, vp.width / 2.6))
+      g.position.y = THREE.MathUtils.lerp(g.position.y, vp.height * 0.17, 0.05)
+    } else {
+      g.scale.setScalar(Math.min(1, vp.width / 7.5))
+    }
   })
 
   return (
@@ -298,8 +314,10 @@ export default function ParticleField({
   // cloud hides the lower res, and cutting the backing store is the single
   // biggest fill-rate win on mobile GPUs (0.7² ≈ half the pixels of DPR 1).
   const count = lowPower ? COUNT_LOW : COUNT_HIGH
-  const sizeScale = lowPower ? 3.8 : 3.4
-  const dpr: number | [number, number] = lowPower ? 0.7 : [1, 1.75]
+  // Smaller sprites on mobile: spread over a bigger orb they read as airy
+  // stars, not a solid blob, and the smaller fill footprint stays cheap.
+  const sizeScale = lowPower ? 2.7 : 3.4
+  const dpr: number | [number, number] = lowPower ? 0.75 : [1, 1.75]
 
   return (
     <div
@@ -312,7 +330,7 @@ export default function ParticleField({
         dpr={dpr}
         gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
       >
-        <Particles count={count} sizeScale={sizeScale} />
+        <Particles count={count} sizeScale={sizeScale} mobile={lowPower} />
       </Canvas>
     </div>
   )
