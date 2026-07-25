@@ -90,14 +90,14 @@ void main() {
   // radius, so particles visibly burst apart under the touch and flow back.
   vec2 d = pos.xy - uMouse.xy;
   float dist2 = dot(d, d);
-  float falloff = mix(2.4, 0.75, uPush);
-  float amp = mix(0.5, 2.1, uPush);
+  float falloff = mix(2.4, 1.9, uPush);
+  float amp = mix(0.5, 0.95, uPush);
   float force = exp(-dist2 * falloff) * amp;
   vec2 dir = normalize(d + 0.0001);
   pos.xy += dir * force;
-  pos.z += force * (0.3 + uPush * 0.5) * (aRand.y - 0.5);
-  // a little swirl on touch so the scatter feels alive, not just radial
-  pos.xy += vec2(-dir.y, dir.x) * force * uPush * 0.4;
+  pos.z += force * (0.3 + uPush * 0.25) * (aRand.y - 0.5);
+  // a touch of swirl so the scatter feels alive, not purely radial
+  pos.xy += vec2(-dir.y, dir.x) * force * uPush * 0.15;
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
