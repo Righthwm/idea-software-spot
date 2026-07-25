@@ -18,8 +18,9 @@ const SHAPES = 5 // must match NAV_LINKS length
 const VERT = /* glsl */ `
 uniform float uTime;
 uniform float uProg;     // continuous section index 0..4, scroll-driven
-uniform vec3 uMouse;     // world-space pointer on the z=0 plane
+uniform vec3 uMouse;     // pointer / touch point in the group's local space
 uniform float uSize;
+uniform float uPush;     // 0 = hover, 1 = finger pressed — scatters harder/wider
 
 attribute vec3 aPosB;
 attribute vec3 aPosC;
@@ -85,10 +86,18 @@ void main() {
     sin(t * 0.7 + aRand.x * 6.2831)
   );
 
-  // cursor repulsion
+  // cursor / touch repulsion — a pressed finger pushes harder over a wider
+  // radius, so particles visibly burst apart under the touch and flow back.
   vec2 d = pos.xy - uMouse.xy;
-  float force = exp(-dot(d, d) * 2.2) * 0.5;
-  pos.xy += normalize(d + 0.0001) * force;
+  float dist2 = dot(d, d);
+  float falloff = mix(2.4, 0.75, uPush);
+  float amp = mix(0.5, 2.1, uPush);
+  float force = exp(-dist2 * falloff) * amp;
+  vec2 dir = normalize(d + 0.0001);
+  pos.xy += dir * force;
+  pos.z += force * (0.3 + uPush * 0.5) * (aRand.y - 0.5);
+  // a little swirl on touch so the scatter feels alive, not just radial
+  pos.xy += vec2(-dir.y, dir.x) * force * uPush * 0.4;
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
@@ -194,6 +203,8 @@ function makeAsterisk(rand: () => number, count: number) {
   return arr
 }
 
+const _touch = new THREE.Vector3()
+
 function Particles({
   count,
   sizeScale,
@@ -206,15 +217,37 @@ function Particles({
   const mat = useRef<THREE.ShaderMaterial>(null!)
   const group = useRef<THREE.Group>(null!)
   const pointer = useRef({ x: 0, y: 0 })
+  const push = useRef(0) // 0 = released, 1 = finger pressed
   const sections = useRef<HTMLElement[]>([])
 
   useEffect(() => {
-    const onMove = (e: PointerEvent) => {
-      pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1
-      pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
+    const setFrom = (cx: number, cy: number) => {
+      pointer.current.x = (cx / window.innerWidth) * 2 - 1
+      pointer.current.y = -((cy / window.innerHeight) * 2 - 1)
+    }
+    const onMove = (e: PointerEvent) => setFrom(e.clientX, e.clientY)
+    // Dedicated touch handling: point the scatter at the finger and press hard.
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (!t) return
+      setFrom(t.clientX, t.clientY)
+      push.current = 1
+    }
+    const onTouchEnd = () => {
+      push.current = 0
     }
     window.addEventListener('pointermove', onMove, { passive: true })
-    return () => window.removeEventListener('pointermove', onMove)
+    window.addEventListener('touchstart', onTouch, { passive: true })
+    window.addEventListener('touchmove', onTouch, { passive: true })
+    window.addEventListener('touchend', onTouchEnd, { passive: true })
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('touchstart', onTouch)
+      window.removeEventListener('touchmove', onTouch)
+      window.removeEventListener('touchend', onTouchEnd)
+      window.removeEventListener('touchcancel', onTouchEnd)
+    }
   }, [])
 
   const geo = useMemo(() => {
@@ -257,11 +290,6 @@ function Particles({
     u.uProg.value = THREE.MathUtils.lerp(u.uProg.value, target, 0.07)
 
     const vp = state.viewport
-    u.uMouse.value.set(
-      (pointer.current.x * vp.width) / 2,
-      (pointer.current.y * vp.height) / 2,
-      0,
-    )
 
     // spin while a shape is in flight, land facing the camera when settled
     const g = group.current
@@ -284,6 +312,16 @@ function Particles({
     } else {
       g.scale.setScalar(Math.min(1, vp.width / 7.5))
     }
+
+    // Convert the pointer/touch into the group's local space (after its scale,
+    // lift and spin are applied) so the scatter lands exactly under the finger.
+    g.updateWorldMatrix(true, false)
+    _touch.set((pointer.current.x * vp.width) / 2, (pointer.current.y * vp.height) / 2, 0)
+    g.worldToLocal(_touch)
+    u.uMouse.value.copy(_touch)
+    // snap the push in on contact, ease it out on release
+    const rate = push.current > u.uPush.value ? 0.4 : 0.06
+    u.uPush.value = THREE.MathUtils.lerp(u.uPush.value, push.current, rate)
   })
 
   return (
@@ -301,6 +339,7 @@ function Particles({
             uProg: { value: 0 },
             uMouse: { value: new THREE.Vector3(99, 99, 0) },
             uSize: { value: Math.min(2, window.devicePixelRatio) * sizeScale },
+            uPush: { value: 0 },
           }}
         />
       </points>
