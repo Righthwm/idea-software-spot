@@ -12,7 +12,7 @@ import { NAV_LINKS } from '../data/content'
  */
 
 const COUNT_HIGH = 24000
-const COUNT_LOW = 7000 // phones: ~70% fewer points to cut fill-rate/overdraw
+const COUNT_LOW = 3800 // phones: ~85% fewer points to cut fill-rate/overdraw
 const SHAPES = 5 // must match NAV_LINKS length
 
 const VERT = /* glsl */ `
@@ -294,11 +294,12 @@ export default function ParticleField({
   ready: boolean
   lowPower: boolean
 }) {
-  // Phones: fewer points, larger sprites to keep the shapes legible, and a
-  // hard DPR cap of 1 so the backing store isn't rendered at 2–3× resolution.
+  // Phones: far fewer points, and render at ~0.7× resolution — a soft glowing
+  // cloud hides the lower res, and cutting the backing store is the single
+  // biggest fill-rate win on mobile GPUs (0.7² ≈ half the pixels of DPR 1).
   const count = lowPower ? COUNT_LOW : COUNT_HIGH
-  const sizeScale = lowPower ? 4.6 : 3.4
-  const dpr: [number, number] = lowPower ? [1, 1] : [1, 1.75]
+  const sizeScale = lowPower ? 3.8 : 3.4
+  const dpr: number | [number, number] = lowPower ? 0.7 : [1, 1.75]
 
   return (
     <div

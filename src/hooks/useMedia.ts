@@ -23,6 +23,11 @@ export function useIsTouch() {
   return useMediaQuery('(pointer: coarse)')
 }
 
+/** Matches Tailwind's `md` breakpoint — the orbital menu is desktop-only. */
+export function useIsDesktop() {
+  return useMediaQuery('(min-width: 768px)')
+}
+
 // Static, one-shot read of the device's raw horsepower.
 const LOW_CORE = typeof navigator !== 'undefined' && (navigator.hardwareConcurrency ?? 8) <= 4
 const LOW_MEM =

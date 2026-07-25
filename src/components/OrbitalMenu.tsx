@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { NAV_LINKS } from '../data/content'
 import { scrollToSection } from '../lib/scroll'
+import { useIsDesktop } from '../hooks/useMedia'
 
 const STEP = 360 / NAV_LINKS.length // 72° per section
 const RADIUS = 215 // px, label ring
@@ -15,8 +16,12 @@ const SIZE = 560 // px, wheel diameter
 export default function OrbitalMenu() {
   const wheel = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  const isDesktop = useIsDesktop()
 
   useEffect(() => {
+    // The dial is `hidden md:block`; on phones skip the per-frame scroll loop
+    // entirely so it isn't reading layout every frame behind a hidden element.
+    if (!isDesktop) return
     let raf = 0
     let rot = 180 // current rendered rotation, eased toward target
 
@@ -53,7 +58,7 @@ export default function OrbitalMenu() {
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [])
+  }, [isDesktop])
 
   return (
     <div
