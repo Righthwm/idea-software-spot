@@ -12,7 +12,7 @@ import { NAV_LINKS } from '../data/content'
  */
 
 const COUNT_HIGH = 24000
-const COUNT_LOW = 5500 // phones: fewer points + small sprites keep fill low
+const COUNT_LOW = 4200 // phones: back near the original density for all shapes
 const SHAPES = 5 // must match NAV_LINKS length
 
 const VERT = /* glsl */ `
@@ -270,12 +270,17 @@ function Particles({
       Math.sin(v * Math.PI) * 1.4 + Math.sin(state.clock.elapsedTime * 0.12) * 0.18
     g.rotation.x = THREE.MathUtils.lerp(g.rotation.x, pointer.current.y * -0.22 - 0.08, 0.04)
     g.rotation.z = THREE.MathUtils.lerp(g.rotation.z, pointer.current.x * 0.1, 0.04)
-    // On phones the shape would otherwise shrink to a dense ball centered on
-    // the copy — scale it up so it fills the width as a diffuse backdrop and
-    // lift it above the headline so text stays readable over the glow.
     if (mobile) {
-      g.scale.setScalar(Math.min(1.05, vp.width / 2.6))
-      g.position.y = THREE.MathUtils.lerp(g.position.y, vp.height * 0.17, 0.05)
+      // Only the hero (uProg≈0) gets the enlarged, airy, near-centered orb;
+      // every other section keeps the original compact shape & sprite size.
+      const hero = THREE.MathUtils.clamp(1 - u.uProg.value, 0, 1)
+      const baseScale = Math.min(1, vp.width / 7.5)
+      const heroScale = Math.min(1.05, vp.width / 2.6)
+      g.scale.setScalar(THREE.MathUtils.lerp(baseScale, heroScale, hero))
+      // small lift so the orb sits a touch above dead-centre behind the copy
+      g.position.y = THREE.MathUtils.lerp(g.position.y, vp.height * 0.05 * hero, 0.05)
+      // airy sprites on the hero, chunkier original sprites elsewhere
+      u.uSize.value = Math.min(2, window.devicePixelRatio) * (3.7 - hero)
     } else {
       g.scale.setScalar(Math.min(1, vp.width / 7.5))
     }
