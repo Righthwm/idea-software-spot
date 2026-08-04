@@ -165,8 +165,24 @@ function ShowcaseCard({
       className={`project-card group relative overflow-hidden rounded-2xl border border-paper/10 ${className}`}
     >
       <div className="card-media absolute inset-0" style={{ background: p.gradient }}>
-        <div className="absolute -right-16 -bottom-24 h-72 w-72 rounded-full border border-paper/15" />
-        <div className="absolute -right-4 -bottom-36 h-96 w-96 rounded-full border border-paper/10" />
+        {p.image ? (
+          <>
+            <img
+              src={p.image}
+              alt=""
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            {/* Scrim: light at the top so the photo reads strongly, heavy at the
+                bottom where the title and tags sit. */}
+            <div className="absolute inset-0 bg-gradient-to-b from-void/30 via-transparent to-void/85" />
+          </>
+        ) : (
+          <>
+            <div className="absolute -right-16 -bottom-24 h-72 w-72 rounded-full border border-paper/15" />
+            <div className="absolute -right-4 -bottom-36 h-96 w-96 rounded-full border border-paper/10" />
+          </>
+        )}
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-8">

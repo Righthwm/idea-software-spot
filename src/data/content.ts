@@ -31,34 +31,41 @@ export const SERVICES: Service[] = [
   },
   {
     num: '03',
+    title: 'Robot AI Telefonic',
+    desc: 'Un agent vocal care răspunde la apeluri 24/7 în română, califică lead-urile și programează întâlniri.',
+    meta: 'Voce AI · Preluare apeluri · Programări',
+    gradient: 'linear-gradient(135deg, #8b5cff 0%, #2a1650 60%, #0a0a0f 100%)',
+  },
+  {
+    num: '04',
     title: 'Facebook Ads',
     desc: 'Campanii Meta cu creative testate constant și optimizare pe cost per achiziție, nu pe like-uri.',
     meta: 'Meta · Instagram · Retargeting',
     gradient: 'linear-gradient(135deg, #2331f0 0%, #101040 60%, #0a0a0f 100%)',
   },
   {
-    num: '04',
+    num: '05',
     title: 'Google Ads',
     desc: 'Search, Shopping și Performance Max — capturăm cererea exact în momentul deciziei de cumpărare.',
     meta: 'Search · Shopping · PMax',
     gradient: 'linear-gradient(135deg, #38b6ff 0%, #12283e 60%, #0a0a0f 100%)',
   },
   {
-    num: '05',
+    num: '06',
     title: 'SEO',
     desc: 'Creștere organică sustenabilă: audit tehnic, conținut care rankează și autoritate de domeniu.',
     meta: 'Tehnic · Conținut · Link building',
     gradient: 'linear-gradient(135deg, #7bff9e 0%, #12321c 60%, #0a0a0f 100%)',
   },
   {
-    num: '06',
+    num: '07',
     title: 'TikTok Ads',
     desc: 'Video-uri native care nu se simt a reclamă, pentru audiențe tinere care ignoră formatele clasice.',
     meta: 'Spark Ads · UGC · Creatori',
     gradient: 'linear-gradient(135deg, #ff2d7b 0%, #3e1030 60%, #0a0a0f 100%)',
   },
   {
-    num: '07',
+    num: '08',
     title: 'Snapchat Ads',
     desc: 'Un canal subevaluat în România — costuri mici, audiență Gen Z, formate imersive full-screen.',
     meta: 'Snap Ads · AR · Story Ads',
@@ -72,43 +79,36 @@ export interface Project {
   tags: string[]
   result: string
   gradient: string
+  /** Optional cover image (path under /public); falls back to the gradient. */
+  image?: string
 }
 
 export const PROJECTS: Project[] = [
   {
-    name: 'NovaTech Startup',
-    category: 'Website & Branding',
-    tags: ['Website', 'SEO', 'Google Ads'],
+    name: 'APEX Auto Atelier',
+    category: 'Piese auto',
+    tags: ['Website 3D', 'Piese auto', 'Google Ads'],
     result: '+214% lead-uri în 6 luni',
-    gradient: 'linear-gradient(160deg, #4d6bff 0%, #2331f0 45%, #0d0d24 100%)',
+    gradient: 'linear-gradient(160deg, #0e3a63 0%, #0a1c33 45%, #050a12 100%)',
+    image: '/projects/apex-auto.jpg',
   },
   {
-    name: 'Urban Bites',
-    category: 'E-commerce',
-    tags: ['Magazin online', 'Facebook Ads', 'TikTok Ads'],
-    result: 'ROAS 4.1x în primul trimestru',
-    gradient: 'linear-gradient(160deg, #ff5a2d 0%, #b0330f 45%, #240d0d 100%)',
+    name: 'CB Smiles',
+    // the cover image already carries "STUDIO DENTAR · CLUJ-NAPOCA"
+    category: 'Stomatologie',
+    tags: ['Website 3D', 'Branding', 'SEO'],
+    result: '+68% programări online',
+    gradient: 'linear-gradient(160deg, #1d1b30 0%, #12111c 45%, #06060b 100%)',
+    image: '/projects/cb-smiles.jpg',
   },
   {
-    name: 'FitFlow App',
-    category: 'Landing & Performance',
-    tags: ['Landing page', 'TikTok Ads', 'Snapchat Ads'],
-    result: '38.000 instalări în 90 de zile',
-    gradient: 'linear-gradient(160deg, #ff2d7b 0%, #7b1445 45%, #1c0a16 100%)',
-  },
-  {
-    name: 'Casa Verde Imobiliare',
-    category: 'Website & Lead Gen',
-    tags: ['Website', 'Google Ads', 'CRO'],
-    result: 'Cost pe lead redus cu 57%',
-    gradient: 'linear-gradient(160deg, #7bff9e 0%, #1f8a4a 45%, #0a1c10 100%)',
-  },
-  {
-    name: 'Atelier Lumina',
-    category: 'E-commerce & SEO',
-    tags: ['Magazin online', 'SEO', 'Email'],
-    result: 'Trafic organic dublat într-un an',
-    gradient: 'linear-gradient(160deg, #ffd23d 0%, #b08a0f 45%, #241c08 100%)',
+    name: 'Daniela German',
+    // the cover image already carries "PERSONAL TRAINER · TÂRGU MUREȘ"
+    category: 'Fitness & Coaching',
+    tags: ['Website', 'Scrollytelling', 'Social Media'],
+    result: 'Agendă plină în 8 săptămâni',
+    gradient: 'linear-gradient(160deg, #b0764a 0%, #4a2e1c 45%, #150d08 100%)',
+    image: '/projects/daniela-german.jpg',
   },
 ]
 
