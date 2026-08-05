@@ -97,7 +97,7 @@ export default function HelixShowcase({ reduced }: Props) {
           </h2>
           <div className="flex flex-col gap-8">
             {PROJECTS.map((p) => (
-              <ShowcaseCard key={p.name} project={p} className="h-[60vh] w-full" />
+              <ShowcaseCard key={p.id} project={p} className="h-[60vh] w-full" />
             ))}
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function HelixShowcase({ reduced }: Props) {
           >
             {PROJECTS.map((p) => (
               <div
-                key={p.name}
+                key={p.id}
                 className="helix-card absolute top-1/2 left-1/2 will-change-transform"
                 style={{ visibility: 'hidden', opacity: 0 }}
               >
@@ -193,9 +193,11 @@ function ShowcaseCard({
           <span className="text-right font-mono text-[11px] text-paper/60">{p.result}</span>
         </div>
         <div>
-          <h3 className="font-display text-3xl font-bold tracking-tight text-paper md:text-4xl">
-            {p.name}
-          </h3>
+          {p.name && (
+            <h3 className="font-display text-3xl font-bold tracking-tight text-paper md:text-4xl">
+              {p.name}
+            </h3>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             {p.tags.map((t) => (
               <span

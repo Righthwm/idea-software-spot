@@ -74,7 +74,10 @@ export const SERVICES: Service[] = [
 ]
 
 export interface Project {
-  name: string
+  /** Stable key — projects can stay anonymous, so the name can't serve as one. */
+  id: string
+  /** Client name; omit to keep the case study anonymous. */
+  name?: string
   category: string
   tags: string[]
   result: string
@@ -85,6 +88,7 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    id: 'apex-auto',
     name: 'APEX Auto Atelier',
     category: 'Piese auto',
     tags: ['Website 3D', 'Piese auto', 'Google Ads'],
@@ -93,6 +97,7 @@ export const PROJECTS: Project[] = [
     image: '/projects/apex-auto.jpg',
   },
   {
+    id: 'cb-smiles',
     name: 'CB Smiles',
     // the cover image already carries "STUDIO DENTAR · CLUJ-NAPOCA"
     category: 'Stomatologie',
@@ -102,13 +107,33 @@ export const PROJECTS: Project[] = [
     image: '/projects/cb-smiles.jpg',
   },
   {
-    name: 'Daniela German',
-    // the cover image already carries "PERSONAL TRAINER · TÂRGU MUREȘ"
+    id: 'pt-tgm',
+    // no name: the case study stays anonymous, and the cover image already
+    // carries "PERSONAL TRAINER · TÂRGU MUREȘ"
     category: 'Fitness & Coaching',
     tags: ['Website', 'Scrollytelling', 'Social Media'],
     result: 'Agendă plină în 8 săptămâni',
     gradient: 'linear-gradient(160deg, #b0764a 0%, #4a2e1c 45%, #150d08 100%)',
     image: '/projects/daniela-german.jpg',
+  },
+  {
+    id: 'ampera',
+    name: 'AMPERA Sisteme Electrice',
+    // the cover image already carries "ELECTRICIAN AUTORIZAT ANRE · CLUJ-NAPOCA"
+    category: 'Instalații electrice',
+    tags: ['Website 3D', 'Local SEO', 'Google Ads'],
+    result: 'Cereri de ofertă triplate',
+    gradient: 'linear-gradient(160deg, #1f7f9c 0%, #0d2b38 45%, #050c11 100%)',
+    image: '/projects/ampera.jpg',
+  },
+  {
+    id: 'fagurul-de-aur',
+    name: 'Fagurul de Aur',
+    category: 'Magazin online',
+    tags: ['E-commerce', 'Branding', 'Facebook Ads'],
+    result: '+42% comenzi în primul trimestru',
+    gradient: 'linear-gradient(160deg, #d1a02a 0%, #6b4d10 45%, #201704 100%)',
+    image: '/projects/fagurul-de-aur.jpg',
   },
 ]
 
