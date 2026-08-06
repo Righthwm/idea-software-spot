@@ -168,31 +168,29 @@ export interface Testimonial {
   quote: string
   name: string
   role: string
+  project: string
 }
 
 export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      'În trei luni de la lansarea noului site, rata de conversie s-a triplat. Echipa nu ne-a vândut „un site frumos", ne-a construit un instrument de vânzare.',
-    name: 'Andrei Munteanu',
-    role: 'Fondator, NovaTech Startup',
+      'Vindeam miere bună, dar online arătam ca oricine altcineva. Acum site-ul spune povestea stupinei înainte să ajungă clientul la preț, iar oamenii comandă fără să mai întrebe de ce costă mai mult decât la supermarket.',
+    name: 'Fagurul de Aur',
+    role: 'Miere naturală, Gorj',
+    project: 'Magazin online',
   },
   {
     quote:
-      'Am lucrat cu trei agenții înainte. Idea Software Spot e prima care ne trimite lunar un raport pe care chiar îl înțelegem — și cifre care chiar cresc.',
-    name: 'Ioana Dragomir',
-    role: 'Marketing Manager, Urban Bites',
+      'Credeam că un electrician nu are ce căuta cu un site „de firmă mare". M-au contrazis elegant: acum oamenii sună deja convinși că lucrez ca la carte, nu ca să întrebe cât costă o priză.',
+    name: 'AMPERA Sisteme Electrice',
+    role: 'Electrician autorizat ANRE, Cluj-Napoca',
+    project: 'Website 3D · Local SEO',
   },
   {
     quote:
-      'Campaniile de TikTok păreau un pariu riscant pentru noi. Au devenit canalul cu cel mai mic cost pe instalare din tot mixul nostru media.',
-    name: 'Radu Ilie',
-    role: 'CEO, FitFlow App',
-  },
-  {
-    quote:
-      'Ne-au spus de la început ce nu va funcționa și de ce. Genul ăsta de onestitate valorează mai mult decât orice prezentare de agenție.',
-    name: 'Elena Stancu',
-    role: 'Director, Casa Verde Imobiliare',
+      'Am cerut un site de piese auto și am primit ceva ce clienții îmi trimit înapoi cu „tare arată". Partea care contează: cererile de ofertă vin acum cu detaliile completate corect, nu cu trei cuvinte pe WhatsApp.',
+    name: 'APEX Auto Atelier',
+    role: 'Piese și service auto',
+    project: 'Website 3D · Google Ads',
   },
 ]

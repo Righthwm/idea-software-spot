@@ -1,73 +1,82 @@
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { gsap } from '../lib/gsap'
 import { TESTIMONIALS } from '../data/content'
 import CurveWipe from './CurveWipe'
 
-const EASE = [0.76, 0, 0.24, 1] as const
-
+/**
+ * Carusel de testimoniale. Citatele se schimbă cu un fade scurt condus de
+ * GSAP (nu framer-motion, ca să nu reintroducem o dependință doar pentru
+ * atât). Fundalul e semi-transparent, ca particulele să se vadă prin el.
+ */
 export default function Testimonials() {
-  const [[index, direction], setIndex] = useState<[number, number]>([0, 1])
-  const t = TESTIMONIALS[index]
+  const [active, setActive] = useState(0)
+  const quote = useRef<HTMLDivElement>(null)
+  const firstRun = useRef(true)
 
-  const paginate = (dir: number) => {
-    setIndex(([i]) => [(i + dir + TESTIMONIALS.length) % TESTIMONIALS.length, dir])
-  }
+  useEffect(() => {
+    // La montare conținutul e deja vizibil; animăm doar schimbările ulterioare.
+    if (firstRun.current) {
+      firstRun.current = false
+      return
+    }
+    const el = quote.current
+    if (!el) return
+    const tween = gsap.fromTo(
+      el,
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+    )
+    return () => {
+      tween.kill()
+    }
+  }, [active])
+
+  const item = TESTIMONIALS[active]
 
   return (
     <section className="relative bg-electric-deep/70 text-paper">
       {/* rgba twin of --color-electric-deep (#2331f0), kept in sync with the section bg */}
       <CurveWipe fill="rgba(35, 49, 240, 0.7)" />
 
-      <div className="mx-auto max-w-[1600px] px-6 py-28 md:px-12 md:py-40">
+      <div className="mx-auto w-full max-w-[1600px] px-6 py-28 md:px-12 md:py-36">
         <span className="font-mono text-xs uppercase tracking-[0.3em] text-paper/60">
           Ce spun clienții
         </span>
 
-        <div className="relative mt-14 min-h-[22rem] md:min-h-[18rem]" data-cursor="Trage">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.figure
-              key={index}
-              custom={direction}
-              initial={{ opacity: 0, scale: 0.96, x: direction * 60 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.96, x: direction * -60 }}
-              transition={{ duration: 0.55, ease: EASE }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.25}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -70) paginate(1)
-                else if (info.offset.x > 70) paginate(-1)
-              }}
-              className="cursor-grab active:cursor-grabbing"
-            >
-              <blockquote className="max-w-4xl font-display text-[clamp(1.5rem,3.5vw,2.8rem)] font-semibold leading-[1.3] tracking-tight select-none">
-                „{t.quote}"
-              </blockquote>
-              <figcaption className="mt-8 flex items-center gap-4">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-paper/15 font-display text-sm font-bold">
-                  {t.name.split(' ').map((n) => n[0]).join('')}
-                </span>
-                <div>
-                  <p className="font-semibold">{t.name}</p>
-                  <p className="font-mono text-xs text-paper/60">{t.role}</p>
-                </div>
-              </figcaption>
-            </motion.figure>
-          </AnimatePresence>
+        <div ref={quote} className="mt-10 max-w-4xl">
+          <blockquote className="font-display text-[clamp(1.4rem,3.2vw,2.6rem)] font-semibold leading-[1.35] tracking-tight">
+            „{item.quote}"
+          </blockquote>
+
+          <div className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="font-display text-lg font-bold">{item.name}</span>
+            <span className="text-paper/60">{item.role}</span>
+            <span className="rounded-full border border-paper/30 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-paper/70">
+              {item.project}
+            </span>
+          </div>
         </div>
 
-        {/* position indicators */}
-        <div className="mt-12 flex items-center gap-3">
-          {TESTIMONIALS.map((_, i) => (
+        {/* Bara e subțire din motive estetice, dar butonul din jurul ei are
+            înălțime reală — altfel ținta de click ar fi de 4px. */}
+        <div className="mt-12 flex gap-1" role="tablist" aria-label="Testimoniale">
+          {TESTIMONIALS.map((t, i) => (
             <button
-              key={i}
-              onClick={() => setIndex(([cur]) => [i, i > cur ? 1 : -1])}
-              aria-label={`Testimonial ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-500 [transition-timing-function:cubic-bezier(0.76,0,0.24,1)] ${
-                i === index ? 'w-10 bg-paper' : 'w-2 bg-paper/30 hover:bg-paper/60'
-              }`}
-            />
+              key={t.name}
+              role="tab"
+              aria-selected={active === i}
+              aria-label={`Testimonial ${t.name}`}
+              onClick={() => setActive(i)}
+              className="group flex h-11 cursor-pointer items-center px-2"
+            >
+              <span
+                className={`block h-1 rounded-full transition-all duration-500 ${
+                  active === i
+                    ? 'w-12 bg-paper'
+                    : 'w-6 bg-paper/30 group-hover:w-8 group-hover:bg-paper/60'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>
