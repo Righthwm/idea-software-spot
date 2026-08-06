@@ -1,3 +1,5 @@
+import { FOUNDED } from '../data/content'
+
 /** Datele oficiale din Registrul Comerțului — identificarea firmei pe site. */
 const LEGAL = [
   { label: 'CUI', value: '46034818' },
@@ -10,7 +12,7 @@ export default function Footer() {
     <footer className="border-t border-paper/10 bg-void">
       <div className="mx-auto flex max-w-[1600px] flex-col gap-8 px-6 py-10 font-mono text-xs uppercase tracking-[0.2em] text-paper/40 md:px-12">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <span>© {new Date().getFullYear()} Idea Software Spot S.R.L.</span>
+          <span>© {FOUNDED} Idea Software Spot S.R.L.</span>
           <span>Website-uri &amp; marketing digital — România</span>
         </div>
 

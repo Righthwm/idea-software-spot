@@ -1,3 +1,6 @@
+/** Anul înființării firmei — Reg. Com. J12/2261/2022, înregistrată 29 aprilie 2022. */
+export const FOUNDED = 2022
+
 export const NAV_LINKS = [
   { label: 'Acasă', href: '#acasa' },
   { label: 'Servicii', href: '#servicii' },
@@ -156,7 +159,8 @@ export interface Stat {
 export const STATS: Stat[] = [
   { value: 50, suffix: '+', label: 'proiecte livrate' },
   { value: 98, suffix: '%', label: 'clienți care revin' },
-  { value: 5, suffix: '', label: 'ani de experiență' },
+  // derivat din anul înființării, ca să nu rămână în urmă an de an
+  { value: new Date().getFullYear() - FOUNDED, suffix: '', label: 'ani de experiență' },
   { value: 3.2, decimals: 1, suffix: 'x', label: 'ROAS mediu campanii' },
 ]
 
