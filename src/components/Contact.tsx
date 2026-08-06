@@ -15,6 +15,8 @@ export default function Contact({ reduced }: Props) {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const isTouch = useIsTouch()
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Magnetic letters: each char eases toward a nearby cursor and back
   useEffect(() => {
@@ -97,9 +99,31 @@ export default function Contact({ reduced }: Props) {
     return () => ctx.revert()
   }, [reduced])
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSent(true)
+    if (sending) return
+    setError(null)
+    setSending(true)
+
+    const data = Object.fromEntries(new FormData(e.currentTarget))
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const payload = (await res.json().catch(() => null)) as { error?: string } | null
+      if (!res.ok) throw new Error(payload?.error ?? 'Mesajul nu a putut fi trimis.')
+      setSent(true)
+    } catch (err) {
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : 'Mesajul nu a putut fi trimis. Încearcă din nou.',
+      )
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -178,15 +202,31 @@ export default function Contact({ reduced }: Props) {
                 />
               </label>
 
-              <div className="contact-submit">
-                <Magnetic strength={0.4} className="inline-block">
+              {/* honeypot: ascuns pentru oameni, completat de boți */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute left-[-9999px] h-0 w-0 opacity-0"
+              />
+
+              <div className="contact-submit flex flex-col gap-4">
+                <Magnetic strength={0.4} className="inline-block self-start">
                   <button
                     type="submit"
-                    className="rounded-full bg-electric px-10 py-5 font-mono text-xs font-medium uppercase tracking-[0.25em] text-paper transition-colors hover:bg-electric-deep"
+                    disabled={sending}
+                    className="rounded-full bg-electric px-10 py-5 font-mono text-xs font-medium uppercase tracking-[0.25em] text-paper transition-colors hover:bg-electric-deep disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Trimite mesajul
+                    {sending ? 'Se trimite…' : 'Trimite mesajul'}
                   </button>
                 </Magnetic>
+                {error && (
+                  <p role="alert" className="font-mono text-xs text-[#ff6b5a]">
+                    {error}
+                  </p>
+                )}
               </div>
             </form>
           )}
@@ -194,14 +234,14 @@ export default function Contact({ reduced }: Props) {
           <div className="flex flex-col gap-8 font-mono text-sm text-paper/50 md:items-end md:text-right">
             <div>
               <p className="mb-2 text-xs uppercase tracking-[0.2em] text-paper/30">Email</p>
-              <a href="mailto:hello@ideasoftwarespot.ro" className="text-paper hover:text-electric">
-                hello@ideasoftwarespot.ro
+              <a href="mailto:ideasoftwarespot@gmail.com" className="text-paper hover:text-electric">
+                ideasoftwarespot@gmail.com
               </a>
             </div>
             <div>
               <p className="mb-2 text-xs uppercase tracking-[0.2em] text-paper/30">Telefon</p>
-              <a href="tel:+40712345678" className="text-paper hover:text-electric">
-                +40 712 345 678
+              <a href="tel:+40722213956" className="text-paper hover:text-electric">
+                0722 213 956
               </a>
             </div>
             <div>

@@ -232,8 +232,8 @@ export default function Header() {
 
           <div className="menu-meta flex flex-col gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/40">
             <span>Idea Software Spot S.R.L. — România</span>
-            <a href="mailto:hello@ideasoftwarespot.ro" className="text-paper/70 hover:text-electric">
-              hello@ideasoftwarespot.ro
+            <a href="mailto:ideasoftwarespot@gmail.com" className="text-paper/70 hover:text-electric">
+              ideasoftwarespot@gmail.com
             </a>
           </div>
         </aside>
