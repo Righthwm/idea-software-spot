@@ -14,6 +14,14 @@ export default function Footer() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <span>© {FOUNDED} Idea Software Spot S.R.L.</span>
           <span>Website-uri &amp; marketing digital — România</span>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <a href="/politica-de-confidentialitate.html" className="hover:text-electric">
+              Politica de confidențialitate
+            </a>
+            <a href="/termeni-si-conditii.html" className="hover:text-electric">
+              Termeni și condiții
+            </a>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 border-t border-paper/10 pt-6 text-[10px] tracking-[0.18em] text-paper/30 md:flex-row md:flex-wrap md:items-center md:gap-x-8">
