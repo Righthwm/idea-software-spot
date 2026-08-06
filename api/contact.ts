@@ -9,6 +9,13 @@
  *                   care poate livra DOAR către adresa contului Resend.
  */
 
+/**
+ * Runtime edge: handler-ul de mai jos e scris în stil Web (primește `Request`,
+ * întoarce `Response`). Pe runtime-ul Node, Vercel ar aștepta `(req, res)` și
+ * ar ignora valoarea returnată — cererea ar atârna până la timeout.
+ */
+export const config = { runtime: 'edge' }
+
 const DEFAULT_TO = 'ideasoftwarespot@gmail.com'
 const DEFAULT_FROM = 'Formular Idea Software Spot <onboarding@resend.dev>'
 
