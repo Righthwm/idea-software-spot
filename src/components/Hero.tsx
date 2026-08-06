@@ -89,7 +89,7 @@ export default function Hero({ ready, reduced }: Props) {
 
       <div className="hero-copy relative z-10 mx-auto w-full max-w-[1600px] px-6 will-change-transform md:px-12">
         <p className="hero-eyebrow mb-6 font-mono text-xs uppercase tracking-[0.3em] text-paper/50 opacity-0">
-          Agenție digitală — România
+          Partener digital pentru startup-uri · România
         </p>
         <h1 className="max-w-3xl font-display text-[clamp(1.9rem,4.2vw,3.6rem)] font-extrabold leading-[1.02] tracking-tight">
           {TITLE.map((word, i) => (
@@ -105,8 +105,8 @@ export default function Hero({ ready, reduced }: Props) {
           ))}
         </h1>
         <p className="hero-sub mt-6 max-w-md text-base leading-relaxed text-paper/60 opacity-0 md:text-lg">
-          Website-uri premium și campanii de marketing digital pentru startup-uri și companii care
-          vor creștere măsurabilă — nu doar prezență online.
+          Website-uri premium și campanii care aduc primii clienți. Din 2022 ajutăm startup-uri din
+          România să crească, nu doar să existe online.
         </p>
       </div>
 

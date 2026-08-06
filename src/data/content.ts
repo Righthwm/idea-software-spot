@@ -142,7 +142,7 @@ export const PROJECTS: Project[] = [
 
 export const ABOUT_WORDS: { text: string; accent?: boolean }[] = (() => {
   const paragraph =
-    'Suntem un *spot* de idei, nu o fabrică de site-uri. La Idea Software Spot fiecare proiect începe cu o întrebare simplă: ce înseamnă *rezultat* pentru afacerea ta? Apoi construim în jurul răspunsului — design care *convinge*, campanii care se optimizează pe *date* reale și o relație în care vorbim deschis despre cifre, nu despre promisiuni.'
+    'Din 2022 lucrăm cot la cot cu *startup-uri* și afaceri tinere din România. Știm cum e să pornești cu buget strâns și presiune mare, așa că fiecare proiect începe cu o întrebare simplă: ce înseamnă *creștere* pentru afacerea ta? Apoi construim în jurul răspunsului: design care *convinge*, campanii optimizate pe *date* reale și o relație în care vorbim deschis despre cifre, nu despre promisiuni.'
   return paragraph.split(' ').map((w) => {
     const accent = w.startsWith('*')
     return { text: w.replace(/\*/g, ''), accent }

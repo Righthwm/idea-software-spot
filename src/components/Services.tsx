@@ -104,6 +104,10 @@ export default function Services({ reduced }: Props) {
             <br />
             rezultate, nu pe promisiuni.
           </h2>
+          <p className="max-w-xl text-base leading-relaxed text-paper/50">
+            Pachete gândite pentru startup-uri la început de drum: începi cu ce ai nevoie acum și
+            adaugi pe măsură ce afacerea crește.
+          </p>
         </div>
       </div>
 
